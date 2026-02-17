@@ -1,120 +1,192 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Multi-Agent AI System</title>
+    <title>OrchestrAI Dashboard</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <style>
-        body {
-            margin: 0;
-            font-family: 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-            color: white;
-            text-align: center;
-        }
+<style>
+body {
+    margin: 0;
+    font-family: Arial;
+    background: #0f172a;
+    color: white;
+}
 
-        .container {
-            padding: 50px 20px;
-        }
+header {
+    padding: 20px;
+    text-align: center;
+    font-size: 26px;
+    font-weight: bold;
+    background: #111827;
+}
 
-        h1 {
-            font-size: 2.5rem;
-        }
+.container {
+    padding: 30px;
+    text-align: center;
+}
 
-        textarea {
-            width: 70%;
-            height: 120px;
-            padding: 15px;
-            border-radius: 10px;
-            border: none;
-            font-size: 16px;
-            margin-top: 20px;
-        }
+textarea {
+    width: 60%;
+    height: 100px;
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+}
 
-        button {
-            padding: 12px 30px;
-            margin-top: 20px;
-            font-size: 18px;
-            border-radius: 30px;
-            border: none;
-            background: #00d4ff;
-            cursor: pointer;
-            transition: 0.3s;
-        }
+button {
+    padding: 10px 25px;
+    margin-top: 15px;
+    font-size: 16px;
+    border-radius: 6px;
+    border: none;
+    background: #2563eb;
+    color: white;
+    cursor: pointer;
+}
 
-        button:hover {
-            background: #00aaff;
-        }
+button:hover {
+    background: #1d4ed8;
+}
 
-        .output-card {
-            margin-top: 40px;
-            background: white;
-            color: black;
-            padding: 25px;
-            border-radius: 15px;
-            width: 80%;
-            margin-left: auto;
-            margin-right: auto;
-            text-align: left;
-            white-space: pre-wrap;
-            box-shadow: 0px 10px 25px rgba(0,0,0,0.4);
-        }
+.section {
+    margin-top: 30px;
+    padding: 20px;
+    background: #1f2937;
+    border-radius: 10px;
+    text-align: left;
+}
 
-        .loader {
-            margin-top: 20px;
-            font-size: 18px;
-            animation: blink 1s infinite;
-        }
+.task-card {
+    background: #374151;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 6px;
+}
 
-        @keyframes blink {
-            0% {opacity: 0.2;}
-            50% {opacity: 1;}
-            100% {opacity: 0.2;}
-        }
-    </style>
+.flowchart {
+    margin-top: 20px;
+    font-size: 18px;
+}
+
+.image-box {
+    margin-top: 20px;
+}
+
+img {
+    width: 100%;
+    border-radius: 10px;
+}
+.highlight {
+    background: linear-gradient(135deg, #1e293b, #0f172a);
+    border-left: 5px solid #3b82f6;
+}
+
+.timeline {
+    border-left: 3px solid #3b82f6;
+    padding-left: 15px;
+}
+
+.task-card {
+    background: #1e293b;
+    padding: 12px;
+    margin: 15px 0;
+    border-radius: 8px;
+    position: relative;
+    transition: 0.3s;
+}
+
+.task-card:hover {
+    transform: translateX(5px);
+    background: #334155;
+}
+
+.task-card::before {
+    content: "●";
+    color: #3b82f6;
+    position: absolute;
+    left: -20px;
+}
+
+.final-output {
+    background: #111827;
+    padding: 15px;
+    border-radius: 8px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+}
+
+</style>
 </head>
 
 <body>
 
+<header>🚀 OrchestrAI - Multi-Agent Intelligence Dashboard</header>
+
 <div class="container">
-    <h1>🤖 Autonomous Multi-Agent AI System</h1>
-    <p>Strategy → Planning → Research → Writing → Review</p>
-    <div style="margin-top:20px; font-size:18px;">
-        🧠 Strategy Agent  
-         → 📋 Planner Agent  
-         → 🔍 Research Agent  
-         → ✍️ Writer Agent  
-         → 🧐 Reviewer Agent
-    </div>
 
-    <textarea id="goal" placeholder="Enter your complex goal here..."></textarea><br>
-    <button onclick="generate()">Generate Intelligent Plan</button>
+<textarea id="goal" placeholder="Enter your complex goal..."></textarea><br>
+<button onclick="generate()">Generate Plan</button>
 
-    <div id="loader" class="loader"></div>
-    <div id="output"></div>
+<div class="flowchart">
+🧠 Strategy → 📋 Planner → 🔍 Research → ✍ Writer → 🧐 Reviewer
+</div>
+
+<div id="content"></div>
+
 </div>
 
 <script>
 async function generate() {
-    const goal = document.getElementById("goal").value;
-    const loader = document.getElementById("loader");
-    const outputDiv = document.getElementById("output");
 
-    loader.innerHTML = "🤖 Agents collaborating...";
-    outputDiv.innerHTML = "";
+    const goal = document.getElementById("goal").value;
+    const content = document.getElementById("content");
+
+   content.innerHTML = `
+<div class="section">
+    <h2>🤖 Agents Collaborating...</h2>
+    <p>Planner analyzing... Researcher gathering data... Writer drafting output...</p>
+</div>
+`;
 
     const response = await fetch("/generate", {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ goal: goal })
     });
 
     const data = await response.json();
 
-    loader.innerHTML = "";
-    outputDiv.innerHTML = `<div class="output-card">${data.output}</div>`;
+    const imageURL = `https://source.unsplash.com/1000x400/?${goal}`;
+
+    let tasksHTML = "";
+    data.tasks.forEach(task => {
+        tasksHTML += `<div class="task-card">${task}</div>`;
+    });
+
+    content.innerHTML = `
+    <div class="image-box">
+        <img src="${imageURL}">
+    </div>
+
+    <div class="section highlight">
+        <h2>🎯 Executive Overview</h2>
+        <p>${data.strategy}</p>
+    </div>
+
+    <div class="section">
+        <h2>📋 Task Execution Pipeline</h2>
+        <div class="timeline">
+            ${tasksHTML}
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>📑 Final Strategic Plan</h2>
+        <div class="final-output">
+            ${data.final_output}
+        </div>
+    </div>
+`;
 }
 </script>
 

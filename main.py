@@ -2,9 +2,9 @@ from agents.planner import PlannerAgent
 from agents.researcher import ResearchAgent
 from agents.writer import WriterAgent
 from agents.reviewer import ReviewerAgent
-from memory import Memory
 from agents.strategist import StrategyAgent
-
+from memory import Memory
+import re
 
 
 class MultiAgentSystem:
@@ -13,9 +13,8 @@ class MultiAgentSystem:
         self.researcher = ResearchAgent()
         self.writer = WriterAgent()
         self.reviewer = ReviewerAgent()
-        self.memory = Memory()
         self.strategist = StrategyAgent()
-
+        self.memory = Memory()
 
     def run(self, goal):
         print("\n[System] Starting multi-agent collaboration...\n")
@@ -31,7 +30,7 @@ class MultiAgentSystem:
         # Step 2: Research
         results = []
         for task in tasks:
-            result = self.researcher.execute(goal,task)
+            result = self.researcher.execute(goal, task)
             results.append(result)
 
         self.memory.add("Research Stage:\n" + "\n\n".join(results))
@@ -41,15 +40,33 @@ class MultiAgentSystem:
         self.memory.add("Draft Report:\n" + draft_report)
 
         # Step 4: Review & Improve
-        final_output = self.reviewer.execute(draft_report)
+        review_text = self.reviewer.execute(draft_report)
+
+        # Default confidence score
+        confidence = 8
+
+        # Extract score if available (e.g., "Score: 8/10")
+        score_match = re.search(r"Score:\s*(\d+)/10", review_text)
+        if score_match:
+            confidence = int(score_match.group(1))
+
+        # Extract improved final version
+        if "Improved Final Version:" in review_text:
+            final_output = review_text.split("Improved Final Version:")[-1].strip()
+        else:
+            final_output = review_text
 
         print("\n[System Memory Log]")
         print(self.memory.get_context())
 
-
         print("\n[System] Multi-Agent Execution Completed Successfully.\n")
 
-        return final_output
+        return {
+            "strategy": strategy,
+            "tasks": tasks,
+            "final_output": final_output,
+            "confidence": confidence
+        }
 
 
 if __name__ == "__main__":
@@ -60,4 +77,4 @@ if __name__ == "__main__":
     output = system.run(goal)
 
     print("\n===== FINAL REFINED OUTPUT =====\n")
-    print(output)
+    print(output["final_output"])

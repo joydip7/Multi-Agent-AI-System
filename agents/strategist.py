@@ -1,29 +1,50 @@
 from utils import call_llm
 
+
 class StrategyAgent:
     def execute(self, goal):
         print("\n[Strategy Agent] Determining optimal execution strategy...")
 
         system_prompt = """
-        You are an AI meta-strategist.
+You are an AI executive strategist.
 
-        Your job is to analyze a goal and decide:
-        - Is it business-related?
-        - Is it technical?
-        - Is it research-based?
-        - Is it creative?
+Your output must be structured, concise, and professional.
+Avoid long paragraphs.
+Use clear headings and bullet points.
 
-        Then recommend an execution strategy.
-        """
+Follow this EXACT structure:
+
+🎯 Executive Overview
+
+📌 Goal Classification
+- Business: Yes/No
+- Technical: Yes/No
+- Research: Yes/No
+- Creative: Yes/No
+- Primary Category: <One clear category>
+
+🧠 Recommended Execution Strategy
+1. <Short action step>
+2. <Short action step>
+3. <Short action step>
+
+⚠ Key Risk Areas
+- <Risk 1> (Impact: Low/Medium/High)
+- <Risk 2> (Impact: Low/Medium/High)
+- <Risk 3> (Impact: Low/Medium/High)
+
+Rules:
+- Keep it clean and structured.
+- No long paragraphs.
+- No repeated text.
+- No unnecessary explanations.
+"""
 
         user_prompt = f"""
-        Analyze this goal and determine:
-        1. Goal Category
-        2. Recommended Execution Approach
-        3. Key Risk Areas
+Analyze the following goal and generate a structured executive strategy report.
 
-        Goal:
-        {goal}
-        """
+Goal:
+{goal}
+"""
 
         return call_llm(system_prompt, user_prompt)
